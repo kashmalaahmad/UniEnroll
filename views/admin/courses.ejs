@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Management - Admin Dashboard</title>
+    <link href="/css/admin.css" rel="stylesheet">
+    <style>
+        /* Course management styles */
+        /* Course management styles */
+.course-form {
+    background-color: var(--card-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-label {
+    margin-bottom: 0.5rem;
+    color: var(--text-secondary);
+}
+
+.form-control {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+    color: var(--text-primary);
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+/* Form Grid Layout */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Edit Course Form Specific Styles */
+#editCourseForm {
+    background-color: var(--card-bg, #ffffff);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-top: 1rem;
+    border: 1px solid var(--border-color, #e0e0e0);
+    padding-bottom: 1.5rem; /* Added padding at the bottom */
+}
+
+#editCourseForm .form-control {
+    width: 100%;
+    background-color: var(--bg-secondary, #f5f5f5);
+    color: var(--text-primary, #333333);
+}
+
+#editCourseForm .btn-primary {
+    margin-top: 1rem;
+    background-color: var(--accent-color, #4a69bd);
+    color: white;
+    font-weight: 500;
+}
+
+/* Style for submit button - make it prominent and ensure it's visible */
+#editCourseForm .btn-primary[type="submit"] {
+    display: block;
+    margin: 1.5rem auto 0.5rem auto;
+    padding: 0.75rem 2rem;
+    background-color: var(--accent-color, #4a69bd);
+    color: white;
+    font-weight: 500;
+    border-radius: 4px;
+    width: auto;
+    min-width: 200px;
+}
+
+#editCourseForm h4 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--text-primary, #333333);
+}
+
+/* Prerequisite section styling */
+#editCourseForm .prerequisite-list {
+    border: 1px solid var(--border-color, #e0e0e0);
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+#editPrerequisitesList {
+    margin-bottom: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.prerequisite-list {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+}
+
+.prerequisite-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    padding: 0.5rem;
+    background-color: var(--card-bg);
+    border-radius: 4px;
+}
+
+.prerequisite-item button {
+    margin-left: auto;
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+/* Add these styles to fix inconsistent styling */
+.course-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+    font-weight: normal;
+}
+
+.course-table th,
+.course-table td {
+    padding: 0.75rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: normal;
+}
+
+.course-table th {
+    background-color: var(--bg-secondary);
+    font-weight: 600; /* Semi-bold for headers only */
+}
+
+.capacity-text {
+    min-width: 60px;
+    text-align: right;
+    font-weight: normal;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    font-weight: normal;
+}
+
+.btn-primary {
+    background-color: var(--accent-color);
+    color: var(--text-primary);
+}
+
+.btn-danger {
+    background-color: rgba(220, 53, 69, 0.3);
+    color: #dc3545;
+}
+
+.btn:hover {
+    opacity: 0.9;
+}
+
+/* Form actions container */
+.form-actions {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+/* Modal updated styles */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+}
+
+/* Fix modal size and positioning */
+.modal-content {
+    position: relative;
+    background-color: var(--card-bg);
+    max-height: 80vh;
+    overflow-y: auto;
+    margin: 5% auto;
+    width: 90%;
+    max-width: 800px;
+    padding: 2rem;
+    border-radius: 8px;
+}
+
+/* Prevent background scrolling when modal is open */
+body.modal-open {
+    overflow: hidden;
+}
+
+/* Modal close button styling */
+.close {
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--text-secondary, #777);
+    background: none;
+    border: none;
+    z-index: 10;
+}
+
+/* Make sure form fields use full width */
+.modal-content input[type="text"],
+.modal-content input[type="number"],
+.modal-content textarea {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Style for textarea description */
+textarea.form-control {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.search-box {
+    margin-bottom: 1rem;
+}
+
+.search-input {
+    width: 100%;
+    padding: 0.5rem;
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    color: var(--text-primary);
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.filter-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 200px;
+}
+
+.filter-label {
+    color: var(--text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.filter-select {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    padding: 0.5rem;
+    color: var(--text-primary);
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--accent-color);
+}
+
+.capacity-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.capacity-bar {
+    height: 8px;
+    background-color: var(--bg-secondary);
+    border-radius: 4px;
+    overflow: hidden;
+    flex-grow: 1;
+}
+
+.capacity-fill {
+    height: 100%;
+    background-color: var(--accent-color);
+    transition: width 0.3s ease;
+}
+
+.capacity-text {
+    min-width: 60px;
+    text-align: right;
+}
+
+.schedule-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.schedule-day {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.schedule-time {
+    color: var(--text-primary);
+}
+
+/* For mobile responsiveness */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .modal-content {
+        padding: 1rem;
+        margin: 0;
+        width: 100%;
+        height: 100%;
+        max-height: 100vh;
+        border-radius: 0;
+    }
+}
+</style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar">
+                <div class="position-sticky">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/courses">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/students">Students</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/reports">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main>
+                <div id="content">
+                    <h2>Course Management</h2>
+
+                    <!-- Add Course Form -->
+                    <!-- Update the Add Course Form -->
+<div class="course-form">
+    <h3>Add New Course</h3>
+    <form id="addCourseForm">
+        <div class="form-grid">
+            <div class="form-group">
+                <label class="form-label">Course Code</label>
+                <input type="text" class="form-control" name="code" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Course Name</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Department</label>
+                <input type="text" class="form-control" name="department" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Level</label>
+                <input type="number" class="form-control" name="level" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Credits</label>
+                <input type="number" class="form-control" name="credits" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Capacity</label>
+                <input type="number" class="form-control" name="capacity" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Instructor</label>
+                <input type="text" class="form-control" name="instructor" placeholder="TBD">
+            </div>
+        </div>
+        
+        <div class="form-group" style="margin-top: 1rem;">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" name="description" rows="3" required></textarea>
+        </div>
+
+        <div class="schedule-section" style="margin-top: 1rem;">
+            <h4>Schedule</h4>
+            <div id="scheduleList">
+                <div class="schedule-item form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Day</label>
+                        <select class="form-control" name="schedule[0].day" required>
+                            <option value="">Select Day</option>
+                            <option value="Monday">Monday</option>
+                            <option value="Tuesday">Tuesday</option>
+                            <option value="Wednesday">Wednesday</option>
+                            <option value="Thursday">Thursday</option>
+                            <option value="Friday">Friday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-control" name="schedule[0].startTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-control" name="schedule[0].endTime" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Room</label>
+                        <input type="text" class="form-control" name="schedule[0].room" required>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="btn btn-primary" onclick="addScheduleSlot()">
+                Add Schedule Slot
+            </button>
+        </div>
+
+        <div class="prerequisite-list" style="margin-top: 1rem;">
+            <h4>Prerequisites</h4>
+            <div id="prerequisitesList"></div>
+            <button type="button" class="btn btn-primary" onclick="addPrerequisite()">
+                Add Prerequisite
+            </button>
+        </div>
+
+        <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Add Course</button>
+    </form>
+</div>
+
+<!-- Also update the Edit Course modal form with similar fields -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h3>Edit Course</h3>
+        <form id="editCourseForm">
+            <input type="hidden" name="id">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label class="form-label">Course Code</label>
+                    <input type="text" class="form-control" name="code" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Course Name</label>
+                    <input type="text" class="form-control" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Department</label>
+                    <input type="text" class="form-control" name="department" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Level</label>
+                    <input type="number" class="form-control" name="level" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Credits</label>
+                    <input type="number" class="form-control" name="credits" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Capacity</label>
+                    <input type="number" class="form-control" name="capacity" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Instructor</label>
+                    <input type="text" class="form-control" name="instructor">
+                </div>
+            </div>
+            
+            <div class="form-group" style="margin-top: 1rem;">
+                <label class="form-label">Description</label>
+                <textarea class="form-control" name="description" rows="3" required></textarea>
+            </div>
+
+            <div class="schedule-section" style="margin-top: 1rem;">
+                <h4>Schedule</h4>
+                <div id="editScheduleList"></div>
+                <button type="button" class="btn btn-primary" onclick="addEditScheduleSlot()">
+                    Add Schedule Slot
+                </button>
+            </div>
+
+            <div class="prerequisite-list" style="margin-top: 1rem;">
+                <h4>Prerequisites</h4>
+                <div id="editPrerequisitesList"></div>
+                <button type="button" class="btn btn-primary" onclick="addEditPrerequisite()">
+                    Add Prerequisite
+                </button>
+            </div>
+
+            <button type="submit" class="btn btn-primary" style="margin-top: 1rem;">Update Course</button>
+        </form>
+    </div>
+</div>
+
+                    <!-- Filters -->
+                    <div class="filter-section">
+                        <div class="filter-group">
+                            <label class="filter-label">Department</label>
+                            <select class="filter-select" id="departmentFilter">
+                                <option value="">All Departments</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Credits</label>
+                            <select class="filter-select" id="creditsFilter">
+                                <option value="">All Credits</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label class="filter-label">Capacity</label>
+                            <select class="filter-select" id="capacityFilter">
+                                <option value="">All Capacities</option>
+                                <option value="full">Full</option>
+                                <option value="partial">Partially Full</option>
+                                <option value="empty">Empty</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Course List -->
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Course List</h3>
+                        </div>
+                        <div class="card-body">
+                            <table class="course-table">
+                                <thead>
+                                    <tr>
+                                        <th>Code</th>
+                                        <th>Name</th>
+                                        <th>Department</th>
+                                        <th>Credits</th>
+                                        <th>Capacity</th>
+                                        <th>Schedule</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="courseList">
+                                    <!-- Courses will be dynamically added here -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Edit Course Modal -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Edit Course</h3>
+            <form id="editCourseForm">
+                <input type="hidden" name="id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="form-label">Course Code</label>
+                        <input type="text" class="form-control" name="code" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Course Name</label>
+                        <input type="text" class="form-control" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Department</label>
+                        <input type="text" class="form-control" name="department" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Credits</label>
+                        <input type="number" class="form-control" name="credits" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Capacity</label>
+                        <input type="number" class="form-control" name="capacity" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Schedule</label>
+                        <input type="text" class="form-control" name="schedule" required>
+                    </div>
+                </div>
+
+                <div class="prerequisite-list">
+                    <h4>Prerequisites</h4>
+                    <div id="editPrerequisitesList"></div>
+                    <button type="button" class="btn btn-primary" onclick="addEditPrerequisite()">
+                        Add Prerequisite
+                    </button>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeCourseModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+    // Check for authentication
+    const token = localStorage.getItem('adminToken');
+    if (!token) {
+        window.location.href = '/admin/login';
+        throw new Error('No token found');
+    }
+
+    // Add token to all fetch requests
+    async function fetchWithAuth(url, options = {}) {
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+            throw new Error('No token found');
+        }
+
+        const headers = new Headers({
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        });
+
+        try {
+            const response = await fetch(url, {
+                method: options.method || 'GET',
+                headers: headers,
+                body: options.body ? JSON.stringify(options.body) : undefined
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                localStorage.removeItem('adminToken');
+                window.location.href = '/admin/login';
+                return null;
+            }
+
+            return response;
+        } catch (error) {
+            console.error('Fetch error:', error);
+            throw error;
+        }
+    }
+
+    // Load courses
+    async function loadCourses() {
+        try {
+            const response = await fetchWithAuth('/api/admin/courses');
+            if (!response) return;
+
+            const courses = await response.json();
+            displayCourses(courses);
+            updateFilters(courses);
+        } catch (error) {
+            console.error('Error loading courses:', error);
+            showToast('Error loading courses', 'danger');
+        }
+    }
+
+    // Update filter options
+    function updateFilters(courses) {
+        const departments = new Set();
+        const credits = new Set();
+
+        courses.forEach(course => {
+            departments.add(course.department);
+            credits.add(course.credits);
+        });
+
+        const departmentFilter = document.getElementById('departmentFilter');
+        const creditsFilter = document.getElementById('creditsFilter');
+
+        // Clear existing options except for the first one
+        while (departmentFilter.options.length > 1) {
+            departmentFilter.remove(1);
+        }
+        
+        while (creditsFilter.options.length > 1) {
+            creditsFilter.remove(1);
+        }
+
+        departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept;
+            option.textContent = dept;
+            departmentFilter.appendChild(option);
+        });
+
+        credits.forEach(credit => {
+            const option = document.createElement('option');
+            option.value = credit;
+            option.textContent = credit;
+            creditsFilter.appendChild(option);
+        });
+    }
+
+    // Schedule management
+    let scheduleCounter = 1;
+    let editScheduleCounter = 1;
+
+    function addScheduleSlot() {
+        const scheduleList = document.getElementById('scheduleList');
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item form-grid';
+        scheduleItem.innerHTML = `
+            <div class="form-group">
+                <label class="form-label">Day</label>
+                <select class="form-control" name="schedule[${scheduleCounter}].day" required>
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-control" name="schedule[${scheduleCounter}].startTime" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-control" name="schedule[${scheduleCounter}].endTime" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Room</label>
+                <input type="text" class="form-control" name="schedule[${scheduleCounter}].room" required>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+            </div>
+        `;
+        scheduleList.appendChild(scheduleItem);
+        scheduleCounter++;
+    }
+
+    function addEditScheduleSlot() {
+        const scheduleList = document.getElementById('editScheduleList');
+        const scheduleItem = document.createElement('div');
+        scheduleItem.className = 'schedule-item form-grid';
+        scheduleItem.innerHTML = `
+            <div class="form-group">
+                <label class="form-label">Day</label>
+                <select class="form-control" name="schedule[${editScheduleCounter}].day" required>
+                    <option value="">Select Day</option>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Start Time</label>
+                <input type="time" class="form-control" name="schedule[${editScheduleCounter}].startTime" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">End Time</label>
+                <input type="time" class="form-control" name="schedule[${editScheduleCounter}].endTime" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Room</label>
+                <input type="text" class="form-control" name="schedule[${editScheduleCounter}].room" required>
+            </div>
+            <div class="form-group">
+                <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+            </div>
+        `;
+        scheduleList.appendChild(scheduleItem);
+        editScheduleCounter++;
+    }
+
+    // Display schedule slots in the edit form
+    function displayEditSchedule(schedule) {
+        const scheduleList = document.getElementById('editScheduleList');
+        scheduleList.innerHTML = '';
+        editScheduleCounter = 0;
+        
+        if (schedule && schedule.length > 0) {
+            schedule.forEach((slot, index) => {
+                const scheduleItem = document.createElement('div');
+                scheduleItem.className = 'schedule-item form-grid';
+                
+                scheduleItem.innerHTML = `
+                    <div class="form-group">
+                        <label class="form-label">Day</label>
+                        <select class="form-control" name="schedule[${index}].day" required>
+                            <option value="">Select Day</option>
+                            <option value="Monday" ${slot.day === 'Monday' ? 'selected' : ''}>Monday</option>
+                            <option value="Tuesday" ${slot.day === 'Tuesday' ? 'selected' : ''}>Tuesday</option>
+                            <option value="Wednesday" ${slot.day === 'Wednesday' ? 'selected' : ''}>Wednesday</option>
+                            <option value="Thursday" ${slot.day === 'Thursday' ? 'selected' : ''}>Thursday</option>
+                            <option value="Friday" ${slot.day === 'Friday' ? 'selected' : ''}>Friday</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Start Time</label>
+                        <input type="time" class="form-control" name="schedule[${index}].startTime" value="${slot.startTime}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">End Time</label>
+                        <input type="time" class="form-control" name="schedule[${index}].endTime" value="${slot.endTime}" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Room</label>
+                        <input type="text" class="form-control" name="schedule[${index}].room" value="${slot.room}" required>
+                    </div>
+                    <div class="form-group">
+                        <button type="button" class="btn btn-danger" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                    </div>
+                `;
+                
+                scheduleList.appendChild(scheduleItem);
+                editScheduleCounter = index + 1;
+            });
+        } else {
+            // Add one empty schedule slot if none exists
+            addEditScheduleSlot();
+        }
+    }
+
+    // Prerequisite management
+    function addPrerequisite() {
+        const prerequisitesList = document.getElementById('prerequisitesList');
+        const prerequisiteItem = document.createElement('div');
+        prerequisiteItem.className = 'prerequisite-item';
+        prerequisiteItem.innerHTML = `
+            <select class="form-control prerequisite-select" required>
+                <option value="">Select prerequisite course</option>
+                <!-- Options will be filled dynamically -->
+            </select>
+            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        
+        // Get the select element we just created
+        const select = prerequisiteItem.querySelector('select');
+        
+        // Populate it with course options
+        populatePrerequisiteOptions(select);
+        
+        prerequisitesList.appendChild(prerequisiteItem);
+    }
+
+    function addEditPrerequisite() {
+        const prerequisitesList = document.getElementById('editPrerequisitesList');
+        const prerequisiteItem = document.createElement('div');
+        prerequisiteItem.className = 'prerequisite-item';
+        prerequisiteItem.innerHTML = `
+            <select class="form-control prerequisite-select" required>
+                <option value="">Select prerequisite course</option>
+                <!-- Options will be filled dynamically -->
+            </select>
+            <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+        `;
+        
+        // Get the select element we just created
+        const select = prerequisiteItem.querySelector('select');
+        
+        // Populate it with course options
+        populatePrerequisiteOptions(select);
+        
+        prerequisitesList.appendChild(prerequisiteItem);
+    }
+
+    // Populate prerequisites dropdown with existing courses
+    async function populatePrerequisiteOptions(selectElement) {
+        try {
+            const response = await fetchWithAuth('/api/admin/courses');
+            if (!response) return;
+
+            const courses = await response.json();
+            
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course._id;
+                option.textContent = `${course.code} - ${course.name}`;
+                selectElement.appendChild(option);
+            });
+        } catch (error) {
+            console.error('Error loading courses for prerequisites:', error);
+            showToast('Error loading courses', 'danger');
+        }
+    }
+
+    // Get prerequisites from form
+    function getPrerequisites() {
+        const prerequisites = [];
+        document.querySelectorAll('#prerequisitesList .prerequisite-select').forEach(select => {
+            if (select.value) {
+                prerequisites.push(select.value);
+            }
+        });
+        return prerequisites;
+    }
+
+    function getEditPrerequisites() {
+        const prerequisites = [];
+        document.querySelectorAll('#editPrerequisitesList .prerequisite-select').forEach(select => {
+            if (select.value) {
+                prerequisites.push(select.value);
+            }
+        });
+        return prerequisites;
+    }
+
+    // Display prerequisites in the edit form
+    function displayEditPrerequisites(prerequisites, allCourses) {
+        const prerequisitesList = document.getElementById('editPrerequisitesList');
+        prerequisitesList.innerHTML = '';
+        
+        if (prerequisites && prerequisites.length > 0) {
+            prerequisites.forEach(prereqId => {
+                const prerequisiteItem = document.createElement('div');
+                prerequisiteItem.className = 'prerequisite-item';
+                
+                const selectHTML = `
+                    <select class="form-control prerequisite-select" required>
+                        <option value="">Select prerequisite course</option>
+                        ${allCourses.map(course => `
+                            <option value="${course._id}" ${prereqId === course._id ? 'selected' : ''}>
+                                ${course.code} - ${course.name}
+                            </option>
+                        `).join('')}
+                    </select>
+                    <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()">Remove</button>
+                `;
+                
+                prerequisiteItem.innerHTML = selectHTML;
+                prerequisitesList.appendChild(prerequisiteItem);
+            });
+        }
+    }
+
+    // Display courses in the table
+    function displayCourses(courses) {
+        const courseList = document.getElementById('courseList');
+        courseList.innerHTML = '';
+
+        courses.forEach(course => {
+            const row = document.createElement('tr');
+            const capacityPercentage = (course.registeredStudents.length / course.capacity) * 100;
+            
+            // Format schedule display
+            let scheduleDisplay = '';
+            if (course.schedule && course.schedule.length > 0) {
+                scheduleDisplay = course.schedule.map(slot => {
+                    return `${slot.day} ${slot.startTime}-${slot.endTime} (${slot.room})`;
+                }).join('<br>');
+            }
+            
+            row.innerHTML = `
+                <td>${course.code}</td>
+                <td>${course.name}</td>
+                <td>${course.department}</td>
+                <td>${course.credits}</td>
+                <td>
+                    <div class="capacity-indicator">
+                        <div class="capacity-bar">
+                            <div class="capacity-fill" style="width: ${capacityPercentage}%"></div>
+                        </div>
+                        <span class="capacity-text">${course.registeredStudents.length}/${course.capacity}</span>
+                    </div>
+                </td>
+                <td>
+                    <div class="schedule-info">
+                        ${scheduleDisplay}
+                    </div>
+                </td>
+                <td class="action-buttons">
+                    <button class="btn btn-primary" onclick="editCourse('${course._id}')">Edit</button>
+                    <button class="btn btn-danger" onclick="deleteCourse('${course._id}')">Delete</button>
+                </td>
+            `;
+            courseList.appendChild(row);
+        });
+    }
+
+    // Add course - Updated to handle the new form structure
+    document.getElementById('addCourseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Create a FormData object from the form
+        const formData = new FormData(e.target);
+        
+        // Convert FormData to an object for easier manipulation
+        const formDataObj = Object.fromEntries(formData.entries());
+        
+        // Create schedule array from the form data
+        const schedule = [];
+        const formDataKeys = Object.keys(formDataObj);
+        
+        // Find all schedule items
+        const schedulePattern = /schedule\[(\d+)\]\.(\w+)/;
+        const scheduleIndices = new Set();
+        
+        // Find all schedule indices
+        formDataKeys.forEach(key => {
+            const match = key.match(schedulePattern);
+            if (match) {
+                scheduleIndices.add(parseInt(match[1]));
+            }
+        });
+        
+        // Collect schedule data
+        scheduleIndices.forEach(index => {
+            schedule.push({
+                day: formDataObj[`schedule[${index}].day`],
+                startTime: formDataObj[`schedule[${index}].startTime`],
+                endTime: formDataObj[`schedule[${index}].endTime`],
+                room: formDataObj[`schedule[${index}].room`]
+            });
+        });
+        
+        // Create the course data object
+        const courseData = {
+            code: formDataObj.code,
+            name: formDataObj.name,
+            department: formDataObj.department,
+            level: parseInt(formDataObj.level),
+            credits: parseInt(formDataObj.credits),
+            capacity: parseInt(formDataObj.capacity),
+            instructor: formDataObj.instructor || 'TBD',
+            description: formDataObj.description,
+            schedule: schedule,
+            prerequisites: getPrerequisites()
+        };
+
+        try {
+            const response = await fetchWithAuth('/api/admin/courses', {
+                method: 'POST',
+                body: courseData
+            });
+            if (!response) return;
+
+            const data = await response.json();
+            showToast('Course added successfully', 'success');
+            e.target.reset();
+            document.getElementById('prerequisitesList').innerHTML = '';
+            document.getElementById('scheduleList').innerHTML = '';
+            addScheduleSlot(); // Add one empty schedule slot
+            loadCourses();
+        } catch (error) {
+            console.error('Error adding course:', error);
+            showToast('Error adding course', 'danger');
+        }
+    });
+
+    // Edit course - Updated to handle schedule and prerequisites properly
+    async function editCourse(courseId) {
+        try {
+            // Get the course details
+            const response = await fetchWithAuth(`/api/admin/courses/${courseId}`);
+            if (!response) return;
+            const course = await response.json();
+            
+            // Get all courses for prerequisites dropdown
+            const allCoursesResponse = await fetchWithAuth('/api/admin/courses');
+            if (!allCoursesResponse) return;
+            const allCourses = await allCoursesResponse.json();
+
+            // Fill the form with course data
+            const form = document.getElementById('editCourseForm');
+            form.elements['id'].value = course._id;
+            form.elements['code'].value = course.code;
+            form.elements['name'].value = course.name;
+            form.elements['department'].value = course.department;
+            form.elements['level'].value = course.level;
+            form.elements['credits'].value = course.credits;
+            form.elements['capacity'].value = course.capacity;
+            form.elements['instructor'].value = course.instructor || 'TBD';
+            form.elements['description'].value = course.description;
+
+            // Display schedule and prerequisites
+            displayEditSchedule(course.schedule);
+            displayEditPrerequisites(course.prerequisites, allCourses);
+            
+            // Show the modal
+            document.getElementById('editModal').style.display = 'block';
+        } catch (error) {
+            console.error('Error loading course:', error);
+            showToast('Error loading course', 'danger');
+        }
+    }
+
+    // Update course - Updated to handle the new form structure
+    document.getElementById('editCourseForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Create a FormData object from the form
+        const formData = new FormData(e.target);
+        
+        // Convert FormData to an object for easier manipulation
+        const formDataObj = Object.fromEntries(formData.entries());
+        
+        // Get the course ID
+        const courseId = formDataObj.id;
+        
+        // Create schedule array from the form data
+        const schedule = [];
+        const formDataKeys = Object.keys(formDataObj);
+        
+        // Find all schedule items
+        const schedulePattern = /schedule\[(\d+)\]\.(\w+)/;
+        const scheduleIndices = new Set();
+        
+        // Find all schedule indices
+        formDataKeys.forEach(key => {
+            const match = key.match(schedulePattern);
+            if (match) {
+                scheduleIndices.add(parseInt(match[1]));
+            }
+        });
+        
+        // Collect schedule data
+        scheduleIndices.forEach(index => {
+            if (
+                formDataObj[`schedule[${index}].day`] && 
+                formDataObj[`schedule[${index}].startTime`] && 
+                formDataObj[`schedule[${index}].endTime`] && 
+                formDataObj[`schedule[${index}].room`]
+            ) {
+                schedule.push({
+                    day: formDataObj[`schedule[${index}].day`],
+                    startTime: formDataObj[`schedule[${index}].startTime`],
+                    endTime: formDataObj[`schedule[${index}].endTime`],
+                    room: formDataObj[`schedule[${index}].room`]
+                });
+            }
+        });
+        
+        // Create the course data object
+        const courseData = {
+            code: formDataObj.code,
+            name: formDataObj.name,
+            department: formDataObj.department,
+            level: parseInt(formDataObj.level),
+            credits: parseInt(formDataObj.credits),
+            capacity: parseInt(formDataObj.capacity),
+            instructor: formDataObj.instructor || 'TBD',
+            description: formDataObj.description,
+            schedule: schedule,
+            prerequisites: getEditPrerequisites()
+        };
+
+        try {
+            const response = await fetchWithAuth(`/api/admin/courses/${courseId}`, {
+                method: 'PUT',
+                body: courseData
+            });
+            if (!response) return;
+
+            const data = await response.json();
+            showToast('Course updated successfully', 'success');
+            document.getElementById('editModal').style.display = 'none';
+            loadCourses();
+        } catch (error) {
+            console.error('Error updating course:', error);
+            showToast('Error updating course', 'danger');
+        }
+    });
+
+    // Delete course
+    async function deleteCourse(courseId) {
+        if (!confirm('Are you sure you want to delete this course?')) return;
+
+        try {
+            const response = await fetchWithAuth(`/api/admin/courses/${courseId}`, {
+                method: 'DELETE'
+            });
+            if (!response) return;
+
+            // Handle error cases from the API
+            if (response.status === 400) {
+                const data = await response.json();
+                if (data.dependentCourses) {
+                    const courseNames = data.dependentCourses.map(c => `${c.code} - ${c.name}`).join('\n');
+                    alert(`Cannot delete this course because it is a prerequisite for:\n${courseNames}`);
+                    return;
+                } else if (data.message) {
+                    alert(data.message);
+                    return;
+                }
+            }
+
+            const data = await response.json();
+            showToast('Course deleted successfully', 'success');
+            loadCourses();
+        } catch (error) {
+            console.error('Error deleting course:', error);
+            showToast('Error deleting course', 'danger');
+        }
+    }
+
+    // Filter handling
+    document.getElementById('departmentFilter').addEventListener('change', filterCourses);
+    document.getElementById('creditsFilter').addEventListener('change', filterCourses);
+    document.getElementById('capacityFilter').addEventListener('change', filterCourses);
+
+    function filterCourses() {
+        const department = document.getElementById('departmentFilter').value;
+        const credits = document.getElementById('creditsFilter').value;
+        const capacity = document.getElementById('capacityFilter').value;
+
+        const rows = document.querySelectorAll('#courseList tr');
+        rows.forEach(row => {
+            const rowDepartment = row.cells[2]?.textContent || '';
+            const rowCredits = row.cells[3]?.textContent || '';
+            const capacityText = row.cells[4]?.querySelector('.capacity-text')?.textContent || '';
+            const [registered, total] = capacityText.split('/').map(Number);
+            const percentage = (registered / total) * 100;
+
+            const departmentMatch = !department || rowDepartment === department;
+            const creditsMatch = !credits || rowCredits === credits;
+            const capacityMatch = !capacity || 
+                (capacity === 'full' && percentage >= 90) ||
+                (capacity === 'partial' && percentage > 0 && percentage < 90) ||
+                (capacity === 'empty' && percentage === 0);
+
+            row.style.display = departmentMatch && creditsMatch && capacityMatch ? '' : 'none';
+        });
+    }
+
+    // Modal handling
+    document.querySelector('.close').addEventListener('click', () => {
+        document.getElementById('editModal').style.display = 'none';
+    });
+
+    window.addEventListener('click', (e) => {
+        const modal = document.getElementById('editModal');
+        if (e.target === modal) {
+            modal.style.display = 'none';
+        }
+    });
+
+    // Handle logout
+    document.getElementById('logoutBtn').addEventListener('click', (e) => {
+        e.preventDefault();
+        localStorage.removeItem('adminToken');
+        window.location.href = '/admin/login';
+    });
+// Function to open modal
+function openCourseModal() {
+    document.getElementById('editCourseModal').style.display = 'block';
+    document.body.classList.add('modal-open');
+}
+
+// Function to close modal
+function closeCourseModal() {
+    document.getElementById('editCourseModal').style.display = 'none';
+    document.body.classList.remove('modal-open');
+}
+
+// Close modal when clicking on the X button
+document.querySelector('.close').addEventListener('click', closeCourseModal);
+
+// Close modal when clicking outside the modal content
+window.addEventListener('click', function(event) {
+    if (event.target.className === 'modal') {
+        closeCourseModal();
+    }
+});
+    // Function to show toast messages
+    function showToast(message, type) {
+        // If you have a toast component, implement its display here
+        console.log(`${type.toUpperCase()}: ${message}`);
+        // For now, just alert the message
+        alert(message);
+    }
+
+    // Initialize the page
+    document.addEventListener('DOMContentLoaded', () => {
+        loadCourses();
+        addScheduleSlot(); // Add one empty schedule slot to the add form
+    });
+</script>
+</body>
+</html>

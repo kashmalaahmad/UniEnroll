@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Dashboard - Course Registration System</title>
+    <link href="/css/student.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        .sidebar {
+            width: 250px;
+            background-color: #2c3e50;
+            padding: 20px 0;
+            position: fixed;
+            height: 100vh;
+        }
+        .nav-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        .nav-item {
+            margin: 5px 0;
+        }
+        .nav-link {
+            display: block;
+            padding: 12px 20px;
+            color: #ecf0f1;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        .nav-link:hover, .nav-link.active {
+            background-color: #34495e;
+        }
+        .nav-link i {
+            margin-right: 10px;
+        }
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 20px;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .card-title {
+            margin: 0 0 10px 0;
+            color: #2c3e50;
+        }
+        .card-text {
+            margin: 0;
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+        }
+        .logout-btn {
+            padding: 8px 16px;
+            background-color: #e74c3c;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .logout-btn:hover {
+            background-color: #c0392b;
+        }
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 4px;
+            color: white;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .toast.show {
+            opacity: 1;
+        }
+        .toast.error {
+            background-color: #e74c3c;
+        }
+        .toast.success {
+            background-color: #2ecc71;
+        }
+        .calendar-container {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 100px repeat(5, 1fr);
+            gap: 1px;
+            background-color: #eee;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .calendar-header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .calendar-cell {
+            background-color: white;
+            min-height: 120px;
+            padding: 10px;
+        }
+        .course-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .course-card {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .filter-container {
+            margin-bottom: 20px;
+        }
+        .filter-group {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        .filter-label {
+            color: #2c3e50;
+            font-weight: bold;
+        }
+        .filter-select {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <nav class="sidebar">
+            <ul class="nav-list">
+                <li class="nav-item">
+                    <a class="nav-link active" href="/student/dashboard">
+                        <i class="fas fa-home"></i> Overview
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/courses">
+                        <i class="fas fa-book"></i> Course Registration
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/schedule">
+                        <i class="fas fa-calendar"></i> My Schedule
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/student/prerequisites">
+                        <i class="fas fa-project-diagram"></i> Prerequisites
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main content -->
+        <main class="main-content">
+            <div class="header">
+                <h1>Welcome, <span id="studentName">Student</span></h1>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </button>
+            </div>
+
+            <!-- Student Info -->
+            <div class="stats-grid">
+                <div class="card">
+                    <h3 class="card-title">Department</h3>
+                    <p class="card-text" id="department">-</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Year</h3>
+                    <p class="card-text" id="year">-</p>
+                </div>
+                <div class="card">
+                    <h3 class="card-title">Registered Courses</h3>
+                    <p class="card-text" id="registeredCourses">-</p>
+                </div>
+            </div>
+
+            <!-- Weekly Schedule -->
+            <div class="calendar-container">
+                <h2>Weekly Schedule</h2>
+                <div class="calendar-grid">
+                    <div class="calendar-header">Time</div>
+                    <div class="calendar-header">Monday</div>
+                    <div class="calendar-header">Tuesday</div>
+                    <div class="calendar-header">Wednesday</div>
+                    <div class="calendar-header">Thursday</div>
+                    <div class="calendar-header">Friday</div>
+                    <!-- Time slots will be dynamically added here -->
+                </div>
+            </div>
+
+            <!-- Available Courses -->
+            <div class="section">
+                <h2>Available Courses</h2>
+                <div class="filter-container">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <label class="filter-label">Department</label>
+                            <select class="filter-select" id="departmentFilter">
+                                <option value="">All Departments</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label class="filter-label">Course Level</label>
+                            <select class="filter-select" id="levelFilter">
+                                <option value="">All Levels</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label class="filter-label">Time of Day</label>
+                            <select class="filter-select" id="timeFilter">
+                                <option value="">Any Time</option>
+                                <option value="morning">Morning</option>
+                                <option value="afternoon">Afternoon</option>
+                                <option value="evening">Evening</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label class="filter-label">Days</label>
+                            <select class="filter-select" id="daysFilter">
+                                <option value="">All Days</option>
+                                <option value="monday">Monday</option>
+                                <option value="tuesday">Tuesday</option>
+                                <option value="wednesday">Wednesday</option>
+                                <option value="thursday">Thursday</option>
+                                <option value="friday">Friday</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label class="filter-label">Open Seats</label>
+                            <select class="filter-select" id="seatsFilter">
+                                <option value="">Any</option>
+                                <option value="available">Available</option>
+                                <option value="waitlist">Waitlist</option>
+                                <option value="full">Full</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="course-list" id="courseList">
+                    <!-- Course cards will be dynamically added here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container"></div>
+
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner"></div>
+
+    <!-- Custom JS -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    <script type="module" src="/js/student/dashboard.js"></script>
+</body>
+</html>

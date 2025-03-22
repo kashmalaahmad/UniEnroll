@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reports - Admin Dashboard</title>
+    <link href="/css/admin.css" rel="stylesheet">
+    <style>
+        /* Reports styles */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--accent-color);
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .chart-title {
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chart {
+            height: 300px;
+            width: 100%;
+        }
+
+        .table-container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .report-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .report-table th,
+        .report-table td {
+            padding: 0.75rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .report-table th {
+            background-color: var(--bg-secondary);
+            font-weight: bold;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        .filter-select {
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            padding: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: var(--accent-color);
+        }
+
+        .export-btn {
+            background-color: var(--accent-color);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+
+        .export-btn:hover {
+            opacity: 0.9;
+        }
+
+        .trend-indicator {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .trend-up {
+            color: #28a745;
+        }
+
+        .trend-down {
+            color: #dc3545;
+        }
+
+        .trend-neutral {
+            color: var(--text-secondary);
+        }
+
+        .prerequisite-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+
+        .status-dot.completed {
+            background-color: #28a745;
+        }
+
+        .status-dot.pending {
+            background-color: #ffc107;
+        }
+
+        .status-dot.failed {
+            background-color: #dc3545;
+        }
+
+        .loading {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 300px;
+        }
+
+        .loading::after {
+            content: '';
+            width: 40px;
+            height: 40px;
+            border: 4px solid var(--bg-secondary);
+            border-top-color: var(--accent-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav id="sidebar" class="sidebar">
+                <div class="position-sticky">
+                    <ul class="nav">
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/dashboard">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/courses">Courses</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/admin/students">Students</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/admin/reports">Reports</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" id="logoutBtn">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main content -->
+            <main>
+                <div id="content">
+                    <h2>Reports & Analytics</h2>
+
+                    <!-- Key Statistics -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalStudents">-</div>
+                            <div class="stat-label">Total Students</div>
+                            <div class="trend-indicator">
+                                <span id="studentTrend" class="trend-neutral">0%</span>
+                                <span>vs last semester</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCourses">-</div>
+                            <div class="stat-label">Total Courses</div>
+                            <div class="trend-indicator">
+                                <span id="courseTrend" class="trend-neutral">0%</span>
+                                <span>vs last semester</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="avgEnrollment">-</div>
+                            <div class="stat-label">Average Course Enrollment</div>
+                            <div class="trend-indicator">
+                                <span id="enrollmentTrend" class="trend-neutral">0%</span>
+                                <span>vs last semester</span>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="prerequisiteCompliance">-</div>
+                            <div class="stat-label">Prerequisite Compliance</div>
+                            <div class="trend-indicator">
+                                <span id="complianceTrend" class="trend-neutral">0%</span>
+                                <span>vs last semester</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Course Registration Trends -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Course Registration Trends</h3>
+                            <div class="chart-actions">
+                                <select class="filter-select" id="trendPeriod">
+                                    <option value="week">Last Week</option>
+                                    <option value="month">Last Month</option>
+                                    <option value="semester">This Semester</option>
+                                </select>
+                                <button class="export-btn" onclick="exportChart('registrationTrend')">Export</button>
+                            </div>
+                        </div>
+                        <div id="registrationTrendChart" class="chart loading"></div>
+                    </div>
+
+                    <!-- Department-wise Enrollment -->
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Department-wise Enrollment</h3>
+                            <div class="chart-actions">
+                                <button class="export-btn" onclick="exportChart('departmentEnrollment')">Export</button>
+                            </div>
+                        </div>
+                        <div id="departmentEnrollmentChart" class="chart loading"></div>
+                    </div>
+
+                    <!-- Prerequisite Analysis -->
+                    <div class="table-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Prerequisite Analysis</h3>
+                            <div class="chart-actions">
+                                <select class="filter-select" id="prerequisiteFilter">
+                                    <option value="all">All Courses</option>
+                                    <option value="withPrerequisites">With Prerequisites</option>
+                                    <option value="withoutPrerequisites">Without Prerequisites</option>
+                                </select>
+                                <button class="export-btn" onclick="exportTable('prerequisiteAnalysis')">Export</button>
+                            </div>
+                        </div>
+                        <table class="report-table" id="prerequisiteAnalysis">
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Department</th>
+                                    <th>Prerequisites</th>
+                                    <th>Compliance Rate</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Prerequisite analysis will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Course Capacity Analysis -->
+                    <div class="table-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">Course Capacity Analysis</h3>
+                            <div class="chart-actions">
+                                <select class="filter-select" id="capacityFilter">
+                                    <option value="all">All Courses</option>
+                                    <option value="full">Full Courses</option>
+                                    <option value="partial">Partially Full</option>
+                                    <option value="empty">Empty Courses</option>
+                                </select>
+                                <button class="export-btn" onclick="exportTable('capacityAnalysis')">Export</button>
+                            </div>
+                        </div>
+                        <table class="report-table" id="capacityAnalysis">
+                            <thead>
+                                <tr>
+                                    <th>Course Code</th>
+                                    <th>Course Name</th>
+                                    <th>Department</th>
+                                    <th>Capacity</th>
+                                    <th>Enrolled</th>
+                                    <th>Utilization</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Capacity analysis will be dynamically added here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Check for authentication
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            window.location.href = '/admin/login';
+            throw new Error('No token found');
+        }
+
+        // Add token to all fetch requests
+        async function fetchWithAuth(url, options = {}) {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                throw new Error('No token found');
+            }
+
+            const headers = new Headers({
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            });
+
+            try {
+                const response = await fetch(url, {
+                    method: options.method || 'GET',
+                    headers: headers,
+                    body: options.body ? JSON.stringify(options.body) : undefined
+                });
+
+                if (response.status === 401 || response.status === 403) {
+                    localStorage.removeItem('adminToken');
+                    window.location.href = '/admin/login';
+                    return null;
+                }
+
+                return response;
+            } catch (error) {
+                console.error('Fetch error:', error);
+                throw error;
+            }
+        }
+
+        // Load all reports
+        async function loadReports() {
+            try {
+                const [stats, trends, prerequisites, capacity] = await Promise.all([
+                    fetchWithAuth('/api/admin/reports/stats'),
+                    fetchWithAuth('/api/admin/reports/trends'),
+                    fetchWithAuth('/api/admin/reports/prerequisites'),
+                    fetchWithAuth('/api/admin/reports/capacity')
+                ]);
+
+                if (!stats || !trends || !prerequisites || !capacity) return;
+
+                updateStats(await stats.json());
+                updateTrends(await trends.json());
+                updatePrerequisites(await prerequisites.json());
+                updateCapacity(await capacity.json());
+            } catch (error) {
+                console.error('Error loading reports:', error);
+                showToast('Error loading reports', 'danger');
+            }
+        }
+
+        // Update statistics
+        function updateStats(stats) {
+            document.getElementById('totalStudents').textContent = stats.totalStudents;
+            document.getElementById('totalCourses').textContent = stats.totalCourses;
+            document.getElementById('avgEnrollment').textContent = stats.avgEnrollment.toFixed(1);
+            document.getElementById('prerequisiteCompliance').textContent = `${stats.prerequisiteCompliance}%`;
+
+            updateTrendIndicator('studentTrend', stats.studentTrend);
+            updateTrendIndicator('courseTrend', stats.courseTrend);
+            updateTrendIndicator('enrollmentTrend', stats.enrollmentTrend);
+            updateTrendIndicator('complianceTrend', stats.complianceTrend);
+        }
+
+        // Update trend indicators
+        function updateTrendIndicator(elementId, trend) {
+            const element = document.getElementById(elementId);
+            element.textContent = `${trend > 0 ? '+' : ''}${trend}%`;
+            element.className = trend > 0 ? 'trend-up' : trend < 0 ? 'trend-down' : 'trend-neutral';
+        }
+
+        // Update registration trends chart
+        function updateTrends(trends) {
+            const ctx = document.getElementById('registrationTrendChart');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: trends.labels,
+                    datasets: [{
+                        label: 'Registrations',
+                        data: trends.data,
+                        borderColor: 'var(--accent-color)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'var(--text-primary)'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'var(--border-color)'
+                            },
+                            ticks: {
+                                color: 'var(--text-primary)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'var(--border-color)'
+                            },
+                            ticks: {
+                                color: 'var(--text-primary)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update department enrollment chart
+        function updateDepartmentEnrollment(data) {
+            const ctx = document.getElementById('departmentEnrollmentChart');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: data.labels,
+                    datasets: [{
+                        label: 'Enrollment',
+                        data: data.data,
+                        backgroundColor: 'var(--accent-color)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: 'var(--text-primary)'
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'var(--border-color)'
+                            },
+                            ticks: {
+                                color: 'var(--text-primary)'
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'var(--border-color)'
+                            },
+                            ticks: {
+                                color: 'var(--text-primary)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update prerequisite analysis table
+        function updatePrerequisites(prerequisites) {
+            const tbody = document.querySelector('#prerequisiteAnalysis tbody');
+            tbody.innerHTML = '';
+
+            prerequisites.forEach(course => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${course.code}</td>
+                    <td>${course.name}</td>
+                    <td>${course.department}</td>
+                    <td>${course.prerequisites.join(', ') || 'None'}</td>
+                    <td>${course.complianceRate}%</td>
+                    <td>
+                        <div class="prerequisite-status">
+                            ${course.prerequisites.map(prereq => `
+                                <div class="status-dot ${course.completedPrerequisites.includes(prereq) ? 'completed' : 'pending'}"></div>
+                            `).join('')}
+                        </div>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Update capacity analysis table
+        function updateCapacity(capacity) {
+            const tbody = document.querySelector('#capacityAnalysis tbody');
+            tbody.innerHTML = '';
+
+            capacity.forEach(course => {
+                const utilization = (course.enrolled / course.capacity) * 100;
+                const status = utilization >= 90 ? 'Full' : utilization > 0 ? 'Partial' : 'Empty';
+                
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${course.code}</td>
+                    <td>${course.name}</td>
+                    <td>${course.department}</td>
+                    <td>${course.capacity}</td>
+                    <td>${course.enrolled}</td>
+                    <td>${utilization.toFixed(1)}%</td>
+                    <td>${status}</td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        // Export functions
+        function exportChart(chartId) {
+            const canvas = document.getElementById(chartId);
+            const link = document.createElement('a');
+            link.download = `${chartId}.png`;
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+
+        function exportTable(tableId) {
+            const table = document.getElementById(tableId);
+            const rows = Array.from(table.querySelectorAll('tr'));
+            const csv = rows.map(row => {
+                return Array.from(row.querySelectorAll('th,td'))
+                    .map(cell => `"${cell.textContent}"`)
+                    .join(',');
+            }).join('\n');
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `${tableId}.csv`;
+            link.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        // Filter handling
+        document.getElementById('trendPeriod').addEventListener('change', () => {
+            loadReports();
+        });
+
+        document.getElementById('prerequisiteFilter').addEventListener('change', () => {
+            loadReports();
+        });
+
+        document.getElementById('capacityFilter').addEventListener('change', () => {
+            loadReports();
+        });
+
+        // Handle logout
+        document.getElementById('logoutBtn').addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('adminToken');
+            window.location.href = '/admin/login';
+        });
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            loadReports();
+        });
+    </script>
+</body>
+</html> 
